@@ -15,7 +15,7 @@
 
 ## Background
 
-This provides a simple script to generate YouTube timestamps and subtitles from a video file using OpenAI's whisper and ChatGPT-4 models. It outputs a `segments.srt` file and a `timestamps.txt` file, which can be used when uploading a new video to YouTube.
+This provides a simple script to generate YouTube timestamps and subtitles from a video file using OpenAI's whisper and ChatGPT-4 models. It outputs a `segments.srt` file and a `timestamps.txt` file, which can be used when uploading a new video to YouTube. You can see an example of what the output looks like with an uploaded video [here](https://www.youtube.com/watch?v=-MUq--Nrd0c).
 
 ## Usage
 
@@ -30,10 +30,18 @@ Then, clone this repo and install dependencies:
 
 ```shell
 git clone https://github.com/dtbuchholz/yt-timestamps-subtitles.git
-python3 -m venv venv
-source venv/bin/activate
+python -m venv env
+source env/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+The dependencies include:
+
+- `whisper`: OpenAI's whisper model for transcribing `.mp4` files for SRT subtitles.
+- `openai`: Generate YouTube timestamps from the whisper model's output.
+- `moviepy`: Used for utility function to get video duration and pass it to the prompt.
+- `dotenv`: Load environment variables from `.env` file for the OpenAI API key and organization ID.
 
 Lastly, run the script, passing a path to your video file:
 
