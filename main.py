@@ -128,25 +128,6 @@ def format_time(seconds) -> str:
     return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d},{milliseconds:03d}"
 
 
-def transcribed_text(segments) -> str:
-    """
-    Get the transcribed text from the segments.
-
-    Parameters
-    ----------
-        segments : list
-            List of segments from whisper model.
-
-    Returns
-    -------
-        str
-            Transcribed text from segments.
-    """
-    texts = [s["text"] for s in segments]
-    text = "\n".join(texts)
-    return text
-
-
 def generate_summary(transcript: str, length: int) -> str:
     """
     Generate a summary of the transcript using OpenAI's gpt-4 model as YouTube

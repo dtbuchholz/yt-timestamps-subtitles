@@ -2,9 +2,8 @@
 
 [![License](https://img.shields.io/github/license/tablelandnetwork/docs.svg)](./LICENSE)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg)](https://github.com/RichardLitt/standard-readme)
-[![](https://img.shields.io/badge/made%20by-Textile%20-blue.svg?style=flat-square)](http://textile.io)
 
-> YouTube video timestamp and subtitle generator using OpenAI's whisper and ChatGPT-4 models
+> YouTube video timestamp and subtitle generator using OpenAI's whisper and GPT-4 models
 
 ## Table of Contents
 
@@ -15,7 +14,7 @@
 
 ## Background
 
-This provides a simple script to generate YouTube timestamps and subtitles from a video file using OpenAI's whisper and ChatGPT-4 models. It outputs a `segments.srt` file and a `timestamps.txt` file, which can be used when uploading a new video to YouTube. You can see an example of what the output looks like with an uploaded video [here](https://www.youtube.com/watch?v=-MUq--Nrd0c).
+This provides a simple script to generate YouTube timestamps and subtitles from a video file using OpenAI's whisper and GPT-4 models. It outputs a `segments.srt` file and a `timestamps.txt` file, which can be used when uploading a new video to YouTube. You can see an example of what the output looks like with an uploaded video [here](https://www.youtube.com/watch?v=-MUq--Nrd0c).
 
 ## Usage
 
@@ -38,7 +37,7 @@ pip install -r requirements.txt
 
 The dependencies include:
 
-- `whisper`: OpenAI's whisper model for transcribing `.mp4` files for SRT subtitles.
+- `whisper`: OpenAI's whisper model for transcribing an `mp4` file's subtitles (`.srt` format).
 - `openai`: Generate YouTube timestamps from the whisper model's output.
 - `moviepy`: Used for utility function to get video duration and pass it to the prompt.
 - `dotenv`: Load environment variables from `.env` file for the OpenAI API key and organization ID.
