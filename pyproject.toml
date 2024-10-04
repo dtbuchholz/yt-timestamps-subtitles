@@ -1,0 +1,15 @@
+[project]
+name = "yt-timestamps-subtitles"
+version = "0.0.0"
+description = "YouTube video timestamp and subtitle generator using OpenAI's whisper and GPT-4o models"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "moviepy>=1.0.3",
+    "openai-whisper",
+    "openai>=1.51.0",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.uv.sources]
+openai-whisper = { git = "https://github.com/openai/whisper.git" }

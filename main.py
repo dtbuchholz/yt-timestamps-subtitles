@@ -1,16 +1,20 @@
 """Transcribe a video file and generate YouTube timestamps."""
+
+from sys import exit
 from argparse import ArgumentParser
 from os import getenv
 
-import whisper
 from dotenv import find_dotenv, load_dotenv
 from moviepy.editor import VideoFileClip
 from openai import OpenAI
+from whisper import load_model, DecodingOptions
 
 # Load env vars for OpenAI API and organization
 load_dotenv(find_dotenv())
 openai_api_key = getenv("OPENAI_API_KEY")
 openai_api_org = getenv("OPENAI_API_ORG")
+if not openai_api_key or not openai_api_org:
+    exit("Environment variables not found: OPENAI_API_KEY and/or OPENAI_API_ORG")
 
 # Load OpenAI API client
 client = OpenAI(
@@ -19,8 +23,8 @@ client = OpenAI(
 )
 
 # Load whisper model
-options = whisper.DecodingOptions(fp16=False, language="en")
-whisper_model = whisper.load_model("base.en")
+options = DecodingOptions(fp16=False, language="en")
+whisper_model = load_model("base.en")
 
 
 def cmd() -> str:
@@ -82,8 +86,19 @@ def transcribe(video_path) -> str:
         str
             Transcription of video file.
     """
-    result = whisper_model.transcribe(video_path, **options.__dict__, verbose=False)
-    return result
+    try:
+        with VideoFileClip(video_path) as video:
+            if video.audio is None:
+                raise ValueError("File does not contain an audio stream.")
+
+        result = whisper_model.transcribe(video_path, **options.__dict__, verbose=False)
+        return result
+    except ValueError as e:
+        print(f"Error transcribing video: {e}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error transcribing video: {e}")
+        return None
 
 
 def segments_to_srt(segments) -> str:
@@ -148,7 +163,7 @@ def generate_summary(transcript: str, length: int) -> str:
             Summary of the transcript as YouTube timestamps.
     """
     response = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {
                 "role": "system",
@@ -218,26 +233,32 @@ def main():
     - Convert the segments to SRT format.
     - Generate a summary of the transcript as YouTube timestamps.
     """
-    # Get video file path
-    video_path = cmd()
-    duration = get_video_duration(video_path)
-    print(f"Video duration: {duration}")
+    try:
+        # Get video file path
+        video_path = cmd()
+        duration = get_video_duration(video_path)
+        print(f"Video duration: {duration}")
 
-    # Transcribe video and convert to SRT
-    transcript = transcribe(video_path)
-    segments = segments_to_srt(transcript["segments"])
-    # Write segments to file
-    segments_file = "segments.srt"
-    with open(segments_file, "w") as f:
-        print(f"Writing segments SRT file to: {segments_file}")
-        f.write(segments)
-    summary = generate_summary(segments, duration)
+        # Transcribe video and convert to SRT
+        transcript = transcribe(video_path)
+        if transcript is None:
+            raise Exception("Cannot proceed without a valid transcription.")
 
-    # Write summary to file
-    timestamps_file = "timestamps.txt"
-    with open(timestamps_file, "w") as f:
-        print(f"Writing YouTube timestamps file to: {timestamps_file}")
-        f.write(summary)
+        segments = segments_to_srt(transcript["segments"])
+        # Write segments to file
+        segments_file = "segments.srt"
+        with open(segments_file, "w") as f:
+            print(f"Writing segments SRT file to: {segments_file}")
+            f.write(segments)
+        summary = generate_summary(segments, duration)
+
+        # Write summary to file
+        timestamps_file = "timestamps.txt"
+        with open(timestamps_file, "w") as f:
+            print(f"Writing YouTube timestamps file to: {timestamps_file}")
+            f.write(summary)
+    except Exception as e:
+        exit(f"Error processing video: {e}")
 
 
 if __name__ == "__main__":
